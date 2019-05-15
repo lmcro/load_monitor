@@ -4,7 +4,7 @@
 # Load Monitor Plugin for Directadmin (patched version, 2018)       #
 #####################################################################
 #                                                                   #
-# Patched version: 0.2.4 $ Sun Jan 27 17:26:09 +07 2019             #
+# Patched version: 0.2.6 $ Mon Mar  4 18:07:41 +07 2019             #
 # Original version: 0.1 (written by Future Vision)                  #
 #                                                                   #
 #####################################################################
@@ -24,6 +24,7 @@ require_once dirname(dirname(__FILE__)) . '/exec/bootstrap.php';
 $start = date('Y-m-d H:i', time()-3600);
 $end = date('Y-m-d H:i', time());
 
+$dayRows = $db->query('SELECT strftime("%Y-%m-%d", created) as day FROM loads GROUP BY DATE(created)');
 $loadRows = $db->query('SELECT one, five, fifteen, strftime("%H:%M", created) as curtime, created FROM loads WHERE DATETIME(created) BETWEEN "' . $start . '" AND "' . $end . '"');
 
 $loads = array();

@@ -3,7 +3,7 @@
 # Load Monitor Plugin for Directadmin (patched version, 2018)       #
 #####################################################################
 #                                                                   #
-# Patched version: 0.2.4 $ Sun Jan 27 17:26:09 +07 2019             #
+# Patched version: 0.2.6 $ Mon Mar  4 18:07:41 +07 2019             #
 # Original version: 0.1 (written by Future Vision)                  #
 #                                                                   #
 #####################################################################
@@ -17,21 +17,28 @@
 PLUGIN_DIR="/usr/local/directadmin/plugins/load_monitor";
 PHP_INI="${PLUGIN_DIR}/php.ini";
 
-chown diradmin:diradmin ${PLUGIN_DIR}/*;
-chown -R diradmin:diradmin "${PLUGIN_DIR}/admin/";
-chown -R diradmin:diradmin "${PLUGIN_DIR}/data/";
-chown -R diradmin:diradmin "${PLUGIN_DIR}/exec/";
-chown -R diradmin:diradmin "${PLUGIN_DIR}/hooks/";
-chown -R diradmin:diradmin "${PLUGIN_DIR}/scripts/";
+# permissions
+chown -R diradmin:diradmin "${PLUGIN_DIR}";
+chmod 755 "${PLUGIN_DIR}";
 chmod 755 ${PLUGIN_DIR}/admin/*.html;
 chmod 755 ${PLUGIN_DIR}/exec/*.sh;
 
-[ -f "${PLUGIN_DIR}/data/load_monitor.sqlite" ] || ${PLUGIN_DIR}/scripts/install_db.sh;
-${PLUGIN_DIR}/scripts/install_cron.sh;
+# config
+CUSTOM_CONFIG="${PLUGIN_DIR}/exec/config.ini";
+DEFAULT_CONFIG="${PLUGIN_DIR}/exec/config.ini.default";
+[ -e "${CUSTOM_CONFIG}" ] || cp -p "${DEFAULT_CONFIG}" "${CUSTOM_CONFIG}";
+chown diradmin:diradmin "${CUSTOM_CONFIG}";
+chmod 644 "${CUSTOM_CONFIG}";
 
+# php.ini
 TZ=$(grep ^php_timezone= /usr/local/directadmin/custombuild/options.conf | cut -d= -f2);
 perl -pi -e "s#^date.timezone = .*#date.timezone = ${TZ}#" ${PHP_INI};
 
+# sqlite
+[ -f "${PLUGIN_DIR}/data/load_monitor.sqlite" ] || ${PLUGIN_DIR}/scripts/install_db.sh;
+${PLUGIN_DIR}/scripts/install_cron.sh;
+
+# wrapper
 GCC=gcc;
 if [ -e /usr/bin/gcc ]; then
     GCC=/usr/bin/gcc;
@@ -45,5 +52,12 @@ WRAPPER="install-cron";
 ${GCC} -std=gnu99 -B/usr/bin -o ${PLUGIN_DIR}/exec/${WRAPPER} ${PLUGIN_DIR}/exec/${WRAPPER}.c >> /dev/null 2>&1;
 chown root:diradmin ${PLUGIN_DIR}/exec/${WRAPPER};
 chmod 4550 ${PLUGIN_DIR}/exec/${WRAPPER};
+
+# plugin's configs
+cd "${PLUGIN_DIR}";
+perl -pi -e "s/^installed=.*/installed=yes/" plugin.conf;
+perl -pi -e "s/^active=.*/active=yes/" plugin.conf;
+
+echo "Plugin installed...";
 
 exit 0;

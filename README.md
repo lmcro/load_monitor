@@ -6,11 +6,13 @@ Load Monitor
 
 # Version
 
-- Patched version: 0.2.4 (by Alex S Grebenschikov)
+- Patched version: 0.2.6 (by Alex S Grebenschikov)
 - Original version: 0.1 (written by Future Vision)
 
 # Changes history:
 
+- 0.2.6: Minor update is done to enable updates of the plugin via Directadmin interface
+- 0.2.5: Minor changes: to use own php.ini. A fix for Debian 8 added.
 - 0.2.4: An admin widget added for Evolution skin
 - 0.2.3: Updated to work under Evolution skin
 
@@ -46,8 +48,21 @@ Then go to the plugin settings and update:
 
 # Warnings and requirements
 
-Only CentOS 7 is supported and tested. The patched version of the plugin won't work under CentOS 6 and earlier versions. 
-You will need to use the original version in this case. Potentially can work under current Debian versions (not tested though).
+Time Zone is taken from `/usr/local/directadmin/custombuild/options.conf`. Make sure the value of `php_timezone=` corresponds to your actual Time Zone.
+
+The plugin loads JavaScript files from Google to draw graphs, i.e. it uses Google's libraries for drawing graphs. Your browser should be allowed to load JS from Google.
+
+Supported and tested OS:
+
+- CentOS 6 and 7
+- Debian 8
+
+Potentially can work under  Debian versions (not tested though).
+
+# FAQ:
+
+- Q: Time zone is wrong what to do?
+- A: Change Time Zone in `php_timezone=` of `/usr/local/directadmin/custombuild/options.conf`. And update the plugin.
 
 # Have ideas?
 
